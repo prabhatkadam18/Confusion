@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Link} from'react-router-dom';
-import {Breadcrumb, BreadcrumbItem, FormGroup, Form, Label, Input, Col, Button} from 'reactstrap';
+import {Breadcrumb, BreadcrumbItem, FormGroup, Form, Label, Input, Col, Button, FormFeedback} from 'reactstrap';
 
 class Contact extends Component {
 
@@ -13,10 +13,46 @@ class Contact extends Component {
             email: "",
             agree: false,
             contactType: 'Tel.',
-            message: ""
+            message: "",
+            touched: {
+                firstName: false,
+                lastName: false,
+                telnum: false,
+                email: false
+            }
         }
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
+
+    }
+
+    handleBlur = (field)=> {
+        this.setState({
+            touched: {...this.state.touched, [field]: true}
+        });
+    }
+
+    validate(firstname, lastname, telnum, email){
+        const errors = {
+            firstName: "",
+            lastName: "",
+            telnum: "",
+            email: ""
+        }
+
+        if(this.state.touched.firstName && (firstname.length <3 || firstname.length >10))
+            errors.firstName = 'First Name should be between 3 and 10 characters.';
+        if(this.state.touched.lastName && (lastname.length <3 || lastname.length >10))
+            errors.lastName = 'Last Name should be between 3 and 10 characters.';
+
+        const reg = /^\d+$/;
+        if(this.state.touched.telnum && !reg.test(telnum))
+            errors.telnum = 'Tel. Number should contain only numbers';
+        
+        if(this.state.touched.email && email.split('').filter((x)=> x==='@').length!=1 )
+            errors.email = 'Email must contain one @';
+        
+        return errors;
     }
 
     handleInputChange(event) {        
@@ -30,10 +66,11 @@ class Contact extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        alert('Submitted');
+        alert("Content" + JSON.stringify(this.state));
     }
 
     render(){
+        const errors = this.validate(this.state.firstName, this.state.lastName, this.state.telnum, this.state.email);
         return(
             <div className="container">
                 <div className="row">
@@ -81,25 +118,29 @@ class Contact extends Component {
                             <FormGroup row>
                                 <Label htmlFor='firstname' md={2}>First Name</Label>
                                 <Col md={10}>
-                                    <Input type='text' onChange={this.handleInputChange} id="firstname" name='firstName' placeholder='First Name' value={this.state.firstName}></Input>
+                                    <Input type='text' valid={errors.firstName === ''} invalid={errors.firstName !==''} onBlur={()=>this.handleBlur('firstName')} onChange={this.handleInputChange} id="firstname" name='firstName' placeholder='First Name' value={this.state.firstName}></Input>
+                                    <FormFeedback>{errors.firstName}</FormFeedback>
                                 </Col>
                             </FormGroup>
                             <FormGroup row>
                                 <Label htmlFor='lastname' md={2}>Last Name</Label>
                                 <Col md={10}>
-                                    <Input type='text' onChange={this.handleInputChange} id="lastname" name='lastName' placeholder='Last Name' value={this.state.lastName}></Input>
+                                    <Input type='text' valid={errors.lastName === ''} invalid={errors.lastName !==''} onBlur={()=>this.handleBlur('lastName')} onChange={this.handleInputChange} id="lastname" name='lastName' placeholder='Last Name' value={this.state.lastName}></Input>
+                                    <FormFeedback>{errors.lastName}</FormFeedback>
                                 </Col>
                             </FormGroup>
                             <FormGroup row>
                                 <Label htmlFor='telnum' md={2}>Contact Tel.</Label>
                                 <Col md={10}>
-                                    <Input type='tel' onChange={this.handleInputChange} id="telnum" name='telnum' placeholder='Tel. Number' value={this.state.telnum}></Input>
+                                    <Input type='tel' valid={errors.telnum === ''} invalid={errors.telnum !==''} onBlur={()=>this.handleBlur('telnum')} onChange={this.handleInputChange} id="telnum" name='telnum' placeholder='Tel. Number' value={this.state.telnum}></Input>
+                                    <FormFeedback>{errors.telnum}</FormFeedback>
                                 </Col>
                             </FormGroup>
                             <FormGroup row>
                                 <Label htmlFor='email' md={2}>Email</Label>
                                 <Col md={10}>
-                                    <Input type='email' onChange={this.handleInputChange} id="email" name='email' placeholder='Email' value={this.state.email}></Input>
+                                    <Input type='email' valid={errors.email === ''} invalid={errors.email !==''} onBlur={()=>this.handleBlur('email')} onChange={this.handleInputChange} id="email" name='email' placeholder='Email' value={this.state.email}></Input>
+                                    <FormFeedback>{errors.email}</FormFeedback>
                                 </Col>
                             </FormGroup>
                             <FormGroup row>
