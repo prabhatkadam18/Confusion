@@ -10,6 +10,7 @@ import {COMMENTS } from '../shared/comments';
 import DishDetail from './DishDetailComponent';
 import {Switch, Route, Redirect} from 'react-router-dom';
 import Contact from './ContactComponent';
+import AboutUs from './AboutComponent';
 
 class Main extends Component {
 
@@ -37,6 +38,12 @@ class Main extends Component {
       )
     }
 
+    const About = ()=>{
+      return (
+        <AboutUs leaders={this.state.leaders} />
+      )
+    }
+
     return (
       <div>
         <Header/>
@@ -44,6 +51,7 @@ class Main extends Component {
           <Route path="/home" component={HomePage} />
           <Route exact path="/menu" component={()=> <Menu dishes={this.state.dishes}/> } />
           <Route path='/menu/:dishId' component={DishWithId} />
+          <Route path="/aboutus" component={About} />
           <Route exact path="/contactus" component={Contact} />
           <Redirect to="/home" />
         </Switch>
